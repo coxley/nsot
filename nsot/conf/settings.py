@@ -445,6 +445,7 @@ HOOK_ACTIONS = {
 }
 HOOK_MODELS = [
     'Attribute',
+    'Circuit',
     'Device',
     'Interface',
     'Network',
