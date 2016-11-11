@@ -30,7 +30,8 @@ log = logging.getLogger(__name__)
 # These are constants that becuase they are tied directly to the underlying
 # objects are explicitly NOT USER CONFIGURABLE.
 RESOURCE_BY_IDX = (
-    'Site', 'Network', 'Attribute', 'Device', 'Interface', 'Circuit'
+    'Site', 'Network', 'Attribute', 'Device', 'Interface', 'Circuit',
+    'Protocol',
 )
 RESOURCE_BY_NAME = {
     obj_type: idx
@@ -41,7 +42,7 @@ CHANGE_EVENTS = ('Create', 'Update', 'Delete')
 
 VALID_CHANGE_RESOURCES = set(RESOURCE_BY_IDX)
 VALID_ATTRIBUTE_RESOURCES = set([
-    'Network', 'Device', 'Interface', 'Circuit'
+    'Network', 'Device', 'Interface', 'Circuit', 'Protocol',
 ])
 
 # Lists of 2-tuples of (value, option) for displaying choices in certain model
@@ -1674,6 +1675,67 @@ class Assignment(models.Model):
             'interface': self.interface.id,
             'interface_name': self.interface.name,
             'address': self.address.cidr,
+        }
+
+
+class Protocol(Resource):
+    """Represents a Protocol session"""
+
+    circuit = models.ForeignKey(
+        Circuit, db_index=True, related_name='protocols',
+        on_delete=models.PROTECT,
+        help_text='Circuit session is associated wit'
+    )
+
+    def __unicode__(self):
+        pass
+
+    @property
+    def interfaces(self):
+        pass
+
+    @property
+    def addresses(self):
+        pass
+
+    @property
+    def devices(self):
+        pass
+
+    def clean_site(self, value):
+        pass
+
+    def set_name(self):
+        """Set name to be format: type:a_addr_z_addr"""
+        if self.name:
+            return False
+
+        a_addr = self.a_address.network_address
+        if getattr(self, 'z_address'):
+            z_addr = self.z_address.network_address
+        else:
+            z_addr = 'None'
+
+        self.name = '{}:{}_{}'.format(self.type, a_addr, z_addr)
+        return True
+
+    def clean_fields(self, exclude=None):
+        pass
+
+    def save(self, *args, **kwargs):
+        self.full_clean()
+        super(Protocol, self).save(*args, **kwargs)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'a_address': self.a_address_id,
+            'z_address': self.z_address_id,
+            'circuit': self.circuit_id,
+            'type': self.type,
+            'parent_id': self.parent_id,
+            'attributes': self.get_attributes(),
         }
 
 

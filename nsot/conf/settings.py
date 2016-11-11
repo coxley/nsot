@@ -459,3 +459,21 @@ HOOK_EVENTS = {
     for model in HOOK_MODELS
     for action in HOOK_ACTIONS.values()
 }
+
+#############
+# Protocols #
+#############
+
+# List to validate Protocol types. Can be overwritten in user config
+NSOT_PROTOCOL_TYPES = [
+    'BGP',
+    'EIGRP',
+    'IGRP',
+    'IS-IS',
+    'LDP',
+    'OSPF',
+    'OSPFv3',
+    'RIP',
+    'RIPv2',
+    'RSVP',
+]
